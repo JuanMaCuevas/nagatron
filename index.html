@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	
+</head>
+<body>
+<div>
+	<h1 id="bpm">80 bpm</h1>
+	<button onclick="changeSpeed(-5)">slower</button>
+	<button onclick="changeSpeed(5)">faster</button>
+	<p>Practice your Beat!</p>
+</div>
+
+<canvas id="c" height="640" width="480"></canvas>
+<script>
+
+
+	
+
+const MAX_X = 32;
+const MAX_Y = 32;
+
+let BPM = 0;
+let SPEED = ((60/BPM) * 1000)/MAX_X; 
+const SQUARE_SIZE_X = 15;
+const SQUARE_SIZE_Y = 20;
+const bpmView = document.getElementById("bpm")
+
+class SoundFX {
+  constructor() {
+    this.sounds = [];
+    this.url = 'https://d1490khl9dq1ow.cloudfront.net/sfx/mp3preview/snap_MyTxeMN_.mp3';
+    this.last = 0;
+    this.mute = true;
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+    this.sounds.push(new Audio(this.url));
+  
+
+  	this.playSound = function(){
+		if (this.mute) return;
+		this.sounds[this.last].play();
+		if (this.last < this.sounds.length-1){
+			this.last++;
+		}else{
+			this.last=0;
+		}
+		
+  	}
+
+	this.setMute = function(bool){
+	  	this.mute = bool;
+	}
+
+}
+};
+
+function changeSpeed(change){
+
+	BPM = BPM + change;
+	if (BPM<40) {BPM = 40};
+	if (BPM>500) {BPM = 500	};
+	SPEED = ((60/BPM) * 1000)/MAX_X; 
+	bpmView.innerHTML = BPM + " bmp";
+}
+function drawBackground(ctx){
+
+	ctx.fillStyle = 'blue';
+	ctx.fillRect(0,0,ctx.canvas.width, ctx.canvas.height);
+}
+
+function drawSquare(ctx,next,color){
+	posX = SQUARE_SIZE_X*next.x;
+	posY = SQUARE_SIZE_Y*next.y;
+	ctx.fillStyle = color; 
+	ctx.fillRect(posX,posY,SQUARE_SIZE_X,SQUARE_SIZE_Y);
+	ctx.strokeStyle = 'white'; 
+	ctx.strokeRect(posX,posY,SQUARE_SIZE_X,SQUARE_SIZE_Y);
+
+}
+
+function bpmToColor(bpm){
+	return (perc2color(100-(bpm-40)/2));
+}
+
+function perc2color(perc) {
+	//from https://gist.github.com/mlocati/7210513
+	var r, g, b = 0;
+	if(perc < 50) {
+		r = 255;
+		g = Math.round(5.1 * perc);
+	}
+	else {
+		g = 255;
+		r = Math.round(510 - 5.10 * perc);
+	}
+	var h = r * 0x10000 + g * 0x100 + b * 0x1;
+	return '#' + ('000000' + h.toString(16)).slice(-6);
+}
+
+
+function advance(next){
+	if (next.x < MAX_X){
+			next.x++;
+		}else{
+			next.x = 0;
+			if (next.y < MAX_Y){
+				next.y++;
+			}else{
+				next.y = 0;
+			}
+		}
+}
+function myLoop () {          
+	setTimeout(function () {   
+		if (nextPosition.x == MAX_X/2 ){
+			console.log(fx)
+			fx.playSound();
+		}
+		if (nextPosition.x ==0 && nextPosition.y == 0){drawBackground(ctx);}
+		drawSquare(ctx,nextPosition,color);	
+		color = bpmToColor(BPM);
+		advance(nextPosition);
+		myLoop();
+
+	}, SPEED);
+}; 
+
+changeSpeed(80);
+let fx = new SoundFX();
+const audio = new Audio('https://d1490khl9dq1ow.cloudfront.net/sfx/mp3preview/snap_MyTxeMN_.mp3');
+//http://soundbible.com/mp3/Click2-Sebastian-759472264.mp3');
+
+var c = document.querySelector("#c");
+var ctx = c.getContext('2d');
+ctx.translate(0.5, 0.5);
+let color = 'red';
+ctx.lineWidth=3 
+nextPosition = {x:0,y:0};
+myLoop();
+window.onkeydown = function(){
+	fx.setMute(false);
+	color = 'blue';
+};
+
+
+	</script>
+</body>
+</html>
